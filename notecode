@@ -1,0 +1,41 @@
+W1,W2,W3 = sess.run([W_fc1,W_fc2,W_fc3],feed_dict={x: Xtrain, y_: Ytrain})
+W1 = W1.T
+W2 = W2.T
+W3 = W3.T
+imflat,p1,p2,p3 = sess.run([x_flat,FirstPost,SecondPost,ThirdPost],feed_dict={x: Xtrain, y_: Ytrain})
+dimflat = np.diag(imflat[0,:])
+dp1 = np.diag(p1[0,:])
+dp2 = np.diag(p2[0,:])
+dp3 = np.diag(p3[0,:])
+yscores=sess.run([y_out],feed_dict={x: Xtrain, y_: Ytrain } )
+k = np.argmax(p3)
+val = np.max(p3)
+back3 = np.zeros(10)
+back3[k] = val
+
+W3info = np.dot(W3,dp2)
+su = np.sum(W3info,axis = 1) + .1
+su = 1/(su)
+su = np.diag(su)
+W3info1 = np.dot(su,W3info)
+back3 = np.diag(back3)
+W3info2 = np.dot(back3,W3info1)
+back2 = np.sum(W3info2,axis =0)
+
+W2info = np.dot(W2,dp1)
+su = np.sum(W2info,axis = 1) + .1
+su = 1/(su)
+su = np.diag(su)
+W2info1 = np.dot(su,W2info)
+back2 = np.diag(back2)
+W2info2 = np.dot(back2,W2info1)
+back1 = np.sum(W2info2,axis =0)
+
+W1info = np.dot(W1,dimflat)
+su = np.sum(W1info,axis = 1) + .1
+su = 1/(su)
+su = np.diag(su)
+W1info1 = np.dot(su,W1info)
+back1 = np.diag(back1)
+W1info2 = np.dot(back1,W1info1)
+backimg = np.sum(W1info2,axis =0)
